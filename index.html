@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let TOKEN = `5110035816:AAFupwZgrdC8zwbFTV0ePBdBT5EJh2EUaUA`
+        let text
+        let userId
+        let api
+        async function getUpdates() {
+            let get = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`)
+            get = await get.json()
+            userId = get.result[get.result.length - 1].message.chat.id
+            text = get.result[get.result.length - 1].message.text
+            api = await fetch(`https://pixabay.com/api/?key=25570361-2831118e9efb3556d0258fa4f&q=${text}&image_type=photo`)
+            api = await api.json()
+            
+
+            return (sendMessage(text),sendPhot(userId, api.hits[api.hits.length - 1].pageURL))
+            // return sendPhot()
+
+
+            
+        }
+        async function sendMessage(text) {
+            if(text !== '/start') return
+            let send = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "chat_id": userId,
+                    "text": 'Assalomu aleykum botga xush kelibsiz!'
+                })
+            })
+        }
+        async function sendPhot(userId, api) {
+            let send = await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: userId,
+                    photo: api
+                })
+            })
+
+        }
+
+        getUpdates()
+        sendMessage()
+    </script>
+</body>
+
+</html>
